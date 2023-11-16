@@ -1,7 +1,6 @@
 ﻿using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
+using YG;
 /// <summary>
 /// This script helps in saving and loading data in device
 /// </summary>
@@ -9,24 +8,44 @@ public class GameManager : MonoBehaviour {
 
     public static GameManager instance;
 
-    private GameData data;
-
     public bool isGameOver = false;
     public int currentScore;
 
-    //data to store on device
-    public bool isGameStartedFirstTime;
-    public bool isMusicOn;
-    public int hiScore, points, textureStyle;
-    public bool canShowAds;
-    public bool showRate;
-    public bool[] textureUnlocked;
+    public bool isMusicOn
+    {
+        get {return YandexGame.savesData.isMusicOn;}
+        set{YandexGame.savesData.isMusicOn = value;}
+    }
+    public int hiScore
+    {
+        get{return YandexGame.savesData.hiScore;}
+        set{YandexGame.savesData.hiScore = value;}
+    }
+    public int points 
+    {
+        get{return YandexGame.savesData.points;}
+        set{YandexGame.savesData.points = value;}
+    }
+    public int textureStyle 
+    {
+        get{return YandexGame.savesData.textureStyle;}
+        set{YandexGame.savesData.textureStyle = value;}
+    }
+    public bool[] textureUnlocked 
+    {
+        get{return YandexGame.savesData.textureUnlocked;}
+        set {YandexGame.savesData.textureUnlocked = value;}
+    }
 
     void Awake()
     {
         MakeInstance();
-        InitializeVariables();
+    }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.W))
+            ScreenCapture.CaptureScreenshot(UnityEngine.Random.Range(0, 10000).ToString());
     }
 
     void MakeInstance()
@@ -42,160 +61,20 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    //we initialize variables here
-    void InitializeVariables()
-    {
-        //first we load any data is available
-        Load();
-        if (data != null)
-        {
-            isGameStartedFirstTime = data.getIsGameStartedFirstTime();
-        }
-        else
-        {
-            isGameStartedFirstTime = true;
-        }
-        if (isGameStartedFirstTime)
-        {
-            //when game is started for 1st time on device we set the initial values
-            isGameStartedFirstTime = false;
-            hiScore = 0;
-            points = 0;
-            textureStyle = 0;
-            textureUnlocked = new bool[4];
-            textureUnlocked[0] = true;
-            for (int i = 1; i < textureUnlocked.Length; i++)
-            {
-                textureUnlocked[i] = false;
-            }
-            isMusicOn = true;
-            canShowAds = true;
-            showRate = true;
-            data = new GameData();
-
-            //storing data
-            data.setIsGameStartedFirstTime(isGameStartedFirstTime);
-            data.setIsMusicOn(isMusicOn);
-            data.setHiScore(hiScore);
-            data.setPoints(points);
-            data.setTexture(textureStyle);
-            data.setTextureUnlocked(textureUnlocked);
-            data.setCanShowAds(canShowAds);
-            data.setShowRate(showRate);
-            Save();
-            Load();
-        }
-        else
-        {
-            //getting data
-            isGameStartedFirstTime = data.getIsGameStartedFirstTime();
-            isMusicOn = data.getIsMusicOn();
-            hiScore = data.getHiScore();
-            points = data.getPoints();
-            textureStyle = data.getTexture();
-            textureUnlocked = data.getTextureUnlocked();
-            canShowAds = data.getCanShowAds();
-            showRate = data.getShowRate();      
-        }
-    }
-
     //method to save data
     public void Save()
     {
-        FileStream file = null;
-
-        try
-        {
-            BinaryFormatter bf = new BinaryFormatter();
-            file = File.Create(Application.persistentDataPath + "/GameInfo.dat");
-            if (data != null)
-            {
-                data.setIsGameStartedFirstTime(isGameStartedFirstTime);
-                data.setHiScore(hiScore);
-                data.setPoints(points);
-                data.setTexture(textureStyle);
-                data.setTextureUnlocked(textureUnlocked);
-                data.setIsMusicOn(isMusicOn);
-                data.setCanShowAds(canShowAds);
-                data.setShowRate(showRate);
-                bf.Serialize(file, data);
-            }
-        }
-        catch { }
-        finally
-        {
-            if (file != null)
-            {
-                file.Close();
-            }
-        }
-    }
-
-    //method to load data
-    public void Load()
-    {
-        FileStream file = null;
-        try
-        {
-            BinaryFormatter bf = new BinaryFormatter();
-            file = File.Open(Application.persistentDataPath + "/GameInfo.dat", FileMode.Open);//here we get saved file
-            data = (GameData)bf.Deserialize(file);
-        }
-        catch { }
-        finally
-        {
-            if (file != null)
-            {
-                file.Close();
-            }
-        }
+        YandexGame.SaveProgress();
     }
 }
 
 [Serializable]
 class GameData
 {
-    private bool isGameStartedFirstTime;
     private bool isMusicOn;
     private int hiScore, points, textureStyle;
     private bool[] textureUnlocked;
-    private bool canShowAds;
-    private bool showRate;
 
-    //is game started 1st time
-    public void setIsGameStartedFirstTime(bool isGameStartedFirstTime)
-    {
-        this.isGameStartedFirstTime = isGameStartedFirstTime;
-    }
-
-    public bool getIsGameStartedFirstTime()
-    {
-        return isGameStartedFirstTime;
-    }
-
-    //ads
-    public void setCanShowAds(bool canShowAds)
-    {
-        this.canShowAds = canShowAds;
-    }
-
-    public bool getCanShowAds()
-    {
-        return canShowAds;
-    }
-
-    //rate
-    public void setShowRate(bool showRate)
-    {
-        this.showRate = showRate;
-    }
-
-    public bool getShowRate()
-    {
-        return showRate;
-    }
-
-    //music
     public void setIsMusicOn(bool isMusicOn)
     {
         this.isMusicOn = isMusicOn;

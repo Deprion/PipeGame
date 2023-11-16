@@ -1,11 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using YG;
 
 public class MainMenu : MonoBehaviour
 {
-    public string gamesPage = "";
-
     private AudioSource sound;
 
     public Text bestScore;
@@ -19,7 +18,7 @@ public class MainMenu : MonoBehaviour
 
     void Start()
     {
-        bestScore.text = "Best" + "\n" + GameManager.instance.hiScore;
+        bestScore.text = "Топ" + "\n" + GameManager.instance.hiScore;
         sound = GetComponent<AudioSource>();
         playBtn.GetComponent<Button>().onClick.AddListener(() => { PlayBtn(); });
         rateBtn.GetComponent<Button>().onClick.AddListener(() => { RateBtn(); });
@@ -48,10 +47,7 @@ public class MainMenu : MonoBehaviour
     {
         sound.Play();
 
-        //Application.OpenURL(ANDROIDURL);
-
-        GameManager.instance.showRate = false;
-        GameManager.instance.Save();
+        YandexGame.ReviewShow(true);
     }
 
     void SoundBtn()

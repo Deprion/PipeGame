@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using YG;
 
 public class InGameGui : MonoBehaviour {
 
@@ -35,6 +36,8 @@ public class InGameGui : MonoBehaviour {
             {
                 GameManager.instance.hiScore = GameManager.instance.currentScore;
                 GameManager.instance.Save();
+
+                YandexGame.NewLeaderboardScores("Main", GameManager.instance.hiScore);
             }
 
             score.text = GameManager.instance.currentScore.ToString();
@@ -46,7 +49,7 @@ public class InGameGui : MonoBehaviour {
             if (GameManager.instance.currentScore >= 3)
             {
                 int point = GameManager.instance.currentScore / 3;
-                pointText.text = "Points +" + point;
+                pointText.text = "Очки +" + point;
                 GameManager.instance.points += point;
                 GameManager.instance.Save();
             }

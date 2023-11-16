@@ -17,7 +17,7 @@ public class ShopScript : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
-        totalPoint.text = "Points " + GameManager.instance.points;
+        totalPoint.text = "Очки: " + GameManager.instance.points;
 
         shopBtn.GetComponent<Button>().onClick.AddListener(() => { ShopBtn(); });    //shop
         shopCloseBtn.GetComponent<Button>().onClick.AddListener(() => { ShopCloseBtn(); });    //shopclose
@@ -33,7 +33,7 @@ public class ShopScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        totalPoint.text = "Points " + GameManager.instance.points;
+        totalPoint.text = "Очки: " + GameManager.instance.points;
     }
 
     public void TextureTrack()
