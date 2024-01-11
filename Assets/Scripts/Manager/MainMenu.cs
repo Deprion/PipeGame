@@ -10,8 +10,10 @@ public class MainMenu : MonoBehaviour
     public Text bestScore;
     [SerializeField]
     private Sprite[] soundBtnSprites; //1 for off and 0 for on
-    public Button playBtn, rateBtn, soundBtn;
+    public Button playBtn, rateBtn, soundBtn, authBtn;
     public string gameScene;
+
+    [SerializeField] private GameObject AuthAskMenu;
 
     [SerializeField]
     private Animator slideButtonAnim;
@@ -24,6 +26,8 @@ public class MainMenu : MonoBehaviour
         rateBtn.GetComponent<Button>().onClick.AddListener(() => { RateBtn(); });
 
         soundBtn.GetComponent<Button>().onClick.AddListener(() => { SoundBtn(); });
+
+        authBtn.onClick.AddListener(() => YandexGame.AuthDialog());
         
         if (PlayerPrefs.GetInt("gameMuted") == 0)
         {
@@ -47,7 +51,10 @@ public class MainMenu : MonoBehaviour
     {
         sound.Play();
 
-        YandexGame.ReviewShow(true);
+        if (YandexGame.auth)
+            YandexGame.ReviewShow(true);
+        else
+            AuthAskMenu.SetActive(true);
     }
 
     void SoundBtn()
